@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_2/screen/hora.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_application_2/widgets/custombuttons.dart';
 import 'package:flutter_application_2/widgets/customwidget.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class AgendaDisponibleScreen extends StatefulWidget {
@@ -24,12 +26,12 @@ class _AgendaDisponibleScreenState extends State<AgendaDisponibleScreen> {
   Widget build(BuildContext context) {
     List<IconData> icons = [
       Icons.check_circle_outline_outlined,
-      Icons.favorite,
-      Icons.music_note,
-      Icons.directions_walk,
-      Icons.local_pizza,
-      Icons.phone,
-      Icons.school,
+      FontAwesomeIcons.stethoscope,
+      FontAwesomeIcons.briefcaseMedical,
+      Icons.calendar_month_outlined,
+      Icons.schedule,
+      Icons.person_outline_outlined,
+      Icons.check_circle_outline_outlined,
     ];
 
     List<String> textos = [
@@ -43,6 +45,7 @@ class _AgendaDisponibleScreenState extends State<AgendaDisponibleScreen> {
     ];
 
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
@@ -93,10 +96,15 @@ class _AgendaDisponibleScreenState extends State<AgendaDisponibleScreen> {
             const SizedBox(height: 35),
             CustomNavigationButtons(
               onBackPressed: () {
-                Navigator.pushNamed(context, 'profecional');
+                Navigator.pop(context, 'profecional');
               },
               onNextPressed: () {
-                Navigator.pushNamed(context, 'hora');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => HoraScreen(selectedDay: _selectedDay),
+                  ),
+                );
               },
             ),
           ],
@@ -111,7 +119,7 @@ class _AgendaDisponibleScreenState extends State<AgendaDisponibleScreen> {
       width: 300,
       decoration: BoxDecoration(
         border: Border.all(
-          color: const Color(0xFFB0E1F4), // Borde de color rojo
+          color: const Color(0xFFB0E1F4),
           width: 1,
         ),
         borderRadius: BorderRadius.circular(13),
@@ -130,6 +138,17 @@ class _AgendaDisponibleScreenState extends State<AgendaDisponibleScreen> {
               _selectedDay = selectedDay;
             });
           },
+          calendarFormat: CalendarFormat.month,
+          calendarStyle: const CalendarStyle(
+            selectedDecoration: BoxDecoration(
+              color: Color(0xFF112F6A),
+              shape: BoxShape.circle,
+            ),
+            todayDecoration: BoxDecoration(
+              color: Color(0xFFB0E1F4),
+              shape: BoxShape.circle,
+            ),
+          ),
         ),
       ),
     );

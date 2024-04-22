@@ -21,11 +21,11 @@ class CustomWidget extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(6.0),
           child: CircleAvatar(
-            radius: 15,
+            radius: 16,
             backgroundColor: circleColor,
             child: Icon(
               icon,
-              size: 25,
+              size: 23,
               color: Colors.white,
             ),
           ),
@@ -35,6 +35,8 @@ class CustomWidget extends StatelessWidget {
           style: TextStyle(
             color: textColor,
             fontSize: 7,
+            fontFamily: 'Roboto',
+            fontWeight: FontWeight.w500,
           ),
         ),
       ],

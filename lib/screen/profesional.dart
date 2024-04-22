@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_2/widgets/custombuttons.dart';
 import 'package:flutter_application_2/widgets/customwidget.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class ProfesionalScreen extends StatefulWidget {
   const ProfesionalScreen({Key? key}) : super(key: key);
@@ -17,12 +20,12 @@ class _ProfesionalScreenState extends State<ProfesionalScreen> {
   Widget build(BuildContext context) {
     List<IconData> icons = [
       Icons.check_circle_outline_outlined,
-      Icons.favorite,
-      Icons.music_note,
-      Icons.directions_walk,
-      Icons.local_pizza,
-      Icons.phone,
-      Icons.school,
+      FontAwesomeIcons.stethoscope,
+      FontAwesomeIcons.briefcaseMedical,
+      Icons.calendar_month_outlined,
+      Icons.schedule,
+      Icons.person_outline_outlined,
+      Icons.check_circle_outline_outlined,
     ];
 
     List<String> textos = [
@@ -84,11 +87,12 @@ class _ProfesionalScreenState extends State<ProfesionalScreen> {
               onBackPressed: () {
                 Navigator.pushNamed(context, 'especialidad');
               },
-              onNextPressed: () {
+              onNextPressed: () async {
                 if (selectedProfesional.isNotEmpty) {
+                 
+                  await _sendProfesionalDataToAPI(selectedProfesional);
                   Navigator.pushNamed(context, 'agendadisponible');
                 } else {
-                
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content:
@@ -207,5 +211,32 @@ class _ProfesionalScreenState extends State<ProfesionalScreen> {
         });
       },
     );
+  }
+
+  Future<void> _sendProfesionalDataToAPI(String selectedProfesional) async {
+    var headers = {'Content-Type': 'application/json'};
+    var request = http.Request(
+        'POST', Uri.parse('http://localhost:1337/api/profecionals'));
+    request.body = json.encode({
+      "data": {
+        "id_profecional": "1",
+        "nombre": "Doctora Mariela",
+        "apellido": "Garayy",
+        "especialidad_profecional": selectedProfesional,
+        "beneficio_atencion": "fonasa",
+        "id_agenda": 1,
+        "id_especialidad": 5,
+        "id_sucursal": 1
+      }
+    });
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      print(await response.stream.bytesToString());
+    } else {
+      print(response.reasonPhrase);
+    }
   }
 }

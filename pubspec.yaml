@@ -39,6 +39,8 @@ dependencies:
   introduction_screen: ^3.0.2
   flutter_onboarding_slider: ^1.0.11
   table_calendar: ^3.0.5
+  font_awesome_flutter: ^9.1.0
+  http: ^1.2.0
   
 
 
@@ -114,6 +116,7 @@ flutter:
       fonts:
         - asset: assets/Montserrat-SemiBold.ttf
           weight: 600
+    
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
   #

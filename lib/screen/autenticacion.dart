@@ -1,20 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter_application_2/widgets/CustomBox.dart';
 import 'package:flutter_application_2/widgets/alertamensaje.dart';
 import 'package:flutter_application_2/widgets/custbox.dart';
-
 import 'package:flutter_application_2/widgets/customwidget.dart';
 
-class AutenticacionScreen extends StatelessWidget {
+class AutenticacionScreen extends StatefulWidget {
   const AutenticacionScreen({Key? key}) : super(key: key);
+
+  @override
+  _AutenticacionScreenState createState() => _AutenticacionScreenState();
+}
+
+class _AutenticacionScreenState extends State<AutenticacionScreen> {
+  TextEditingController identificationController = TextEditingController();
+  TextEditingController phoneNumberController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  bool aceptaPoliticaPrivacidad = false;
+
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     List<IconData> icons = [
-      Icons.check_circle_outline_outlined,
-      Icons.favorite,
-      Icons.music_note,
-      Icons.directions_walk,
+      Icons.how_to_reg_outlined,
+      Icons.verified_user_outlined,
+      Icons.ballot,
+      Icons.calendar_month_outlined,
     ];
 
     List<String> textos = [
@@ -25,9 +37,11 @@ class AutenticacionScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      body: SingleChildScrollView(
+        body: SingleChildScrollView(
+      child: Form(
+        key: _formKey,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Image.asset(
               'assets/8.png',
@@ -81,28 +95,64 @@ class AutenticacionScreen extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 10),
-            const CustoBox(
+            CustomBox(
               labelText: 'Identificación alfanumérica',
               hintText: 'Ingresa tu identificación alfanumérica',
+              controller: identificationController,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Por favor, ingresa tu identificación';
+                }
+
+                if (!validarRut(value)) {
+                  return 'Ingresa un RUT válido';
+                }
+
+                return null;
+              },
             ),
             const SizedBox(height: 10),
-            const CustoBox(
+            CustomBox(
               labelText: 'Número telefónico',
               hintText: 'Ingresa tu Número telefónico',
+              controller: phoneNumberController,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Por favor, ingresa tu número telefónico';
+                }
+
+                RegExp regex = RegExp(r'^[0-9]{9}$');
+                if (!regex.hasMatch(value)) {
+                  return 'Ingresa un número telefónico válido de 9 dígitos';
+                }
+                return null;
+              },
             ),
             const SizedBox(height: 10),
-            const CustoBox(
+            CustomBox(
               labelText: 'Correo electrónico',
               hintText: 'Ingresa tu Correo electrónico',
+              controller: emailController,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Por favor, ingresa tu correo electrónico';
+                }
+                if (!value.contains('@') || !value.contains('.')) {
+                  return 'Ingresa un correo válido';
+                }
+                return null;
+              },
             ),
             const SizedBox(height: 15),
             Row(
               children: [
                 const SizedBox(width: 15),
                 Checkbox(
-                  value: false, // Puedes manejar el estado del checkbox
+                  value: aceptaPoliticaPrivacidad,
                   onChanged: (value) {
-                    // Implementa la lógica cuando cambia el estado del checkbox
+                    setState(() {
+                      aceptaPoliticaPrivacidad = value!;
+                    });
                   },
                 ),
                 const Text(
@@ -122,14 +172,72 @@ class AutenticacionScreen extends StatelessWidget {
                 Navigator.pushNamed(context, 'home');
               },
               onNextPressed: () {
-                // Mostrar la alerta de mensaje
-                AlertaNumero.mostrar(
-                    context, 'Este es un mensaje de verificación');
+                if (_formKey.currentState!.validate()) {
+                  if (aceptaPoliticaPrivacidad) {
+                    
+                    _eliminarCitaMedica(identificationController.text);
+                    
+                    AlertaNumero.mostrar(
+                        context, 'Este es un mensaje de verificación');
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                            'Debes aceptar la política de privacidad para continuar.'),
+                      ),
+                    );
+                  }
+                }
               },
+              nextButtonEnabled: aceptaPoliticaPrivacidad,
             ),
           ],
         ),
       ),
-    );
+    ));
+  }
+
+  void _eliminarCitaMedica(String idAlfanumerica) async {
+    var url = Uri.parse('http://localhost:1337/api/pacientes/:id');
+    var response = await http.delete(url);
+
+    if (response.statusCode == 200) {
+      print('Cita médica eliminada correctamente');
+    } else {
+      print('Error al eliminar la cita médica: ${response.reasonPhrase}');
+    }
+  }
+
+  bool validarRut(String rut) {
+    final RegExp regex = RegExp(r'^(\d{1,3}(?:\.\d{1,3}){2}-[\dkK])$');
+
+    if (!regex.hasMatch(rut)) {
+      return false;
+    }
+
+    rut = rut.replaceAll('.', '');
+    rut = rut.replaceAll('-', '');
+
+    String dv = rut.substring(rut.length - 1).toUpperCase();
+    rut = rut.substring(0, rut.length - 1);
+
+    int suma = 0;
+    int multiplicador = 2;
+
+    for (int i = rut.length - 1; i >= 0; i--) {
+      suma += int.parse(rut[i]) * multiplicador;
+      multiplicador = multiplicador == 7 ? 2 : multiplicador + 1;
+    }
+
+    int resto = suma % 11;
+    int resultado = 11 - resto;
+
+    String dvCalculado = resultado == 11
+        ? '0'
+        : resultado == 10
+            ? 'K'
+            : resultado.toString();
+
+    return dv == dvCalculado;
   }
 }

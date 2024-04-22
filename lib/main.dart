@@ -15,7 +15,7 @@ import 'package:flutter_application_2/screen/zonascreen.dart';
 void main() => runApp(const MainScreen());
 
 class MainScreen extends StatelessWidget {
-  const MainScreen({super.key});
+  const MainScreen({Key? key});
 
   @override
   Widget build(BuildContext context) {
@@ -23,15 +23,19 @@ class MainScreen extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: 'inicio',
       routes: {
-        'inicio': (_) =>  OnboardingScreen(),
+        'inicio': (_) => OnboardingScreen(),
         'home': (_) => Botones(),
         'zona': (_) => ZonaScreen(),
         'especialidad': (_) => const EspecialidadScreen(),
         'profecional': (_) => const ProfesionalScreen(),
         'agendadisponible': (_) => const AgendaDisponibleScreen(),
-        'hora': (_) => const HoraScreen(),
+        'hora': (context) {
+          final selectedDay =
+              ModalRoute.of(context)!.settings.arguments as DateTime;
+          return HoraScreen(selectedDay: selectedDay);
+        },
         'datospersonales': (_) => const DatosPersonalesScreen(),
-        'confirmacion': (_) =>  ConfirmacionScreen(),
+        'confirmacion': (_) => ConfirmacionScreen(),
         'autenticacion': (_) => const AutenticacionScreen(),
         'verificacion': (_) => const VerificacionScreen(),
         'eleccion': (_) => const EleccionScreen()

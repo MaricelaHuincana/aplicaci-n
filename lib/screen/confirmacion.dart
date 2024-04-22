@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_application_2/widgets/custbox.dart';
 
@@ -11,12 +12,12 @@ class ConfirmacionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     List<IconData> icons = [
       Icons.check_circle_outline_outlined,
-      Icons.favorite,
-      Icons.music_note,
-      Icons.directions_walk,
-      Icons.local_pizza,
-      Icons.phone,
-      Icons.school,
+      FontAwesomeIcons.stethoscope,
+      FontAwesomeIcons.briefcaseMedical,
+      Icons.calendar_month_outlined,
+      Icons.schedule,
+      Icons.person_outline_outlined,
+      Icons.check_circle_outline_outlined,
     ];
 
     List<String> textos = [
@@ -146,6 +147,7 @@ class ConfirmacionScreen extends StatelessWidget {
                 children: [
                   const SizedBox(height: 5),
                   Text('Zona Seleccionada: ${args.zonaSeleccionada}'),
+                  
                 ],
               ),
             ),
@@ -175,6 +177,7 @@ class ConfirmacionArguments {
   final String telefono;
   final String correo;
   final String zonaSeleccionada;
+  
 
   ConfirmacionArguments({
     required this.identificacion,

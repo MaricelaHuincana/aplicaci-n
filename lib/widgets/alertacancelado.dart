@@ -24,7 +24,7 @@ class AlertaCancelado {
                   height: 230,
                 ),
                 const Text(
-                    'Estamos aquí para brindar asistencia en caso de que desee reprogramarla más\n                          adelante.',
+                    'Estamos aquí para brindar asistencia en caso de que desee reprogramarla más\n                            adelante.',
                     style: TextStyle(
                         color: Colors.black,
                         fontFamily: 'Roboto',

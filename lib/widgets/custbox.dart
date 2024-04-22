@@ -5,10 +5,12 @@ class CustomButtons extends StatelessWidget {
     Key? key,
     required this.onBackPressed,
     required this.onNextPressed,
+    this.nextButtonEnabled = true,
   }) : super(key: key);
 
   final VoidCallback onBackPressed;
   final VoidCallback onNextPressed;
+  final bool nextButtonEnabled;
 
   @override
   Widget build(BuildContext context) {
@@ -31,11 +33,11 @@ class CustomButtons extends StatelessWidget {
           style: TextButton.styleFrom(
             backgroundColor: Colors.white,
             side: const BorderSide(
-                color: Color(0xFF009DDD)), // Personaliza el color del botón
+                color: Color(0xFF009DDD)), 
           ),
         ),
         TextButton.icon(
-          onPressed: onNextPressed,
+          onPressed: nextButtonEnabled ? onNextPressed : null,
           icon: const Row(
             children: [
               Text(
@@ -51,6 +53,59 @@ class CustomButtons extends StatelessWidget {
           label: const Icon(Icons.arrow_forward, color: Colors.white),
           style: TextButton.styleFrom(
             backgroundColor: const Color(0xFF2F5FE1),
+          ),
+        ),
+      ],
+    );
+  }
+}
+class CustoBox extends StatelessWidget {
+  final String hintText;
+  final String labelText;
+
+  const CustoBox({
+    required this.hintText,
+    required this.labelText,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 20),
+          child: Text(
+            labelText,
+            style: const TextStyle(
+              fontFamily: 'Roboto',
+              fontWeight: FontWeight.w500,
+              color: Colors.black,
+              fontSize: 12,
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Color(0xFF828282)),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 0.1, horizontal: 12),
+            child: TextField(
+              style: const TextStyle(
+                fontFamily: 'Roboto',
+                fontWeight: FontWeight.w400,
+                color: Color(0xFF003FA6),
+                fontSize: 12,
+              ),
+              decoration: InputDecoration(
+                hintText: hintText,
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(vertical: 1),
+              ),
+            ),
           ),
         ),
       ],

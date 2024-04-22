@@ -1,6 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_2/widgets/custombuttons.dart';
 import 'package:flutter_application_2/widgets/customwidget.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:http/http.dart' as http;
 
 class ZonaScreen extends StatefulWidget {
   ZonaScreen({Key? key}) : super(key: key);
@@ -13,16 +16,41 @@ class _ZonaScreenState extends State<ZonaScreen> {
   String? selectedLocation;
   bool checkBoxValue = false;
 
+  Future<void> enviarDatosAlServidor(String idSucursal, String nombre,
+      String direccion, String telefono, int idProfesional) async {
+    var headers = {'Content-Type': 'application/json'};
+    var request =
+        http.Request('POST', Uri.parse('http://localhost:1337/api/sucuesals'));
+    request.body = json.encode({
+      "data": {
+        "id_sucursal": idSucursal,
+        "nombre_sucursal": nombre,
+        "direccion": direccion,
+        "telefono": telefono,
+        "id_profecional": idProfesional
+      }
+    });
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      print(await response.stream.bytesToString());
+    } else {
+      print(response.reasonPhrase);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     List<IconData> icons = [
       Icons.check_circle_outline_outlined,
-      Icons.favorite,
-      Icons.music_note,
-      Icons.directions_walk,
-      Icons.local_pizza,
-      Icons.phone,
-      Icons.school,
+      FontAwesomeIcons.stethoscope,
+      FontAwesomeIcons.briefcaseMedical,
+      Icons.calendar_month_outlined,
+      Icons.schedule,
+      Icons.person_outline_outlined,
+      Icons.check_circle_outline_outlined,
     ];
 
     List<String> textos = [
@@ -96,7 +124,7 @@ class _ZonaScreenState extends State<ZonaScreen> {
               const Text(
                 'Al continuar usted acepta y confirma haber\n entendido nuestra política de privacidad.',
                 style: TextStyle(
-                  color: Color(0xFF112F6A),
+                  color: Color(0xFF000000),
                   fontSize: 14,
                   fontFamily: 'Roboto',
                   fontWeight: FontWeight.w400,
@@ -109,17 +137,31 @@ class _ZonaScreenState extends State<ZonaScreen> {
             onBackPressed: () {
               Navigator.pushNamed(context, 'home');
             },
-            onNextPressed: selectedLocation != null && checkBoxValue
-                ? () {
-                    Navigator.pushNamed(
-                      context,
-                      'especialidad',
-                      arguments: {
-                        'zonaSeleccionada': selectedLocation!,
-                      },
-                    );
-                  }
-                : () => {},
+            onNextPressed: () async {
+              if (selectedLocation != null && checkBoxValue) {
+                if (selectedLocation == 'Granollers') {
+                  await enviarDatosAlServidor(
+                      "1", "Granollers", "rivas 775", "921815398", 1);
+                } else if (selectedLocation == 'Barcelona (Ciutat Vella)') {
+                  await enviarDatosAlServidor("2", "Barcelona (Ciutat Vella)",
+                      "ulkatrun 775", "921815399", 1);
+                } else if (selectedLocation == 'Barcelona (Gracia)') {
+                  await enviarDatosAlServidor(
+                      "3", "Barcelona (Gracia)", "neruda 775", "966266468", 1);
+                } else if (selectedLocation == 'Sabedell') {
+                  await enviarDatosAlServidor(
+                      "4", "Sabedell", "rivera 775", "921815349", 1);
+                }
+
+                Navigator.pushNamed(
+                  context,
+                  'especialidad',
+                  arguments: {
+                    'zonaSeleccionada': selectedLocation!,
+                  },
+                );
+              }
+            },
           ),
         ],
       ),
@@ -144,7 +186,7 @@ class _ZonaScreenState extends State<ZonaScreen> {
             groupValue: selectedLocation,
             onChanged: (value) {
               setState(() {
-                selectedLocation = value as String;
+                selectedLocation = value as String?;
               });
             },
           ),

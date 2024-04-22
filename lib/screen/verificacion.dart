@@ -8,10 +8,10 @@ class VerificacionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<IconData> icons = [
-      Icons.check_circle_outline_outlined,
-      Icons.favorite,
-      Icons.music_note,
-      Icons.directions_walk,
+      Icons.how_to_reg_outlined,
+      Icons.verified_user_outlined,
+      Icons.ballot,
+      Icons.calendar_month_outlined,
     ];
 
     List<String> textos = [

@@ -1,33 +1,38 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_2/widgets/custombuttons.dart';
 import 'package:flutter_application_2/widgets/customwidget.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:http/http.dart' as http;
 
 class HoraScreen extends StatefulWidget {
-  const HoraScreen({Key? key}) : super(key: key);
+  final DateTime selectedDay;
+
+  const HoraScreen({Key? key, required this.selectedDay}) : super(key: key);
 
   @override
   _HoraScreenState createState() => _HoraScreenState();
 }
 
 class _HoraScreenState extends State<HoraScreen> {
-  late String selectedHour; // Variable para la hora seleccionada
+  late String selectedHour;
 
   @override
   void initState() {
     super.initState();
-    selectedHour = ''; // Inicializar la hora seleccionada como vacía
+    selectedHour = '';
   }
 
   @override
   Widget build(BuildContext context) {
     List<IconData> icons = [
       Icons.check_circle_outline_outlined,
-      Icons.favorite,
-      Icons.music_note,
-      Icons.directions_walk,
-      Icons.local_pizza,
-      Icons.phone,
-      Icons.school,
+      FontAwesomeIcons.stethoscope,
+      FontAwesomeIcons.briefcaseMedical,
+      Icons.calendar_month_outlined,
+      Icons.schedule,
+      Icons.person_outline_outlined,
+      Icons.check_circle_outline_outlined,
     ];
 
     List<String> textos = [
@@ -91,11 +96,13 @@ class _HoraScreenState extends State<HoraScreen> {
               Navigator.pushNamed(context, 'agendadisponible');
             },
             onNextPressed: () {
-              // Verificar si se ha seleccionado una hora antes de continuar
               if (selectedHour.isNotEmpty) {
-                Navigator.pushNamed(context, 'datospersonales');
+                _saveDateAndHourToStrapi(widget.selectedDay, selectedHour);
+                Navigator.pushNamed(
+                  context,
+                  'datospersonales',
+                );
               } else {
-                // Mostrar mensaje indicando que se debe seleccionar una hora
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Selecciona una hora antes de continuar'),
@@ -112,7 +119,6 @@ class _HoraScreenState extends State<HoraScreen> {
   Widget _buildHoraContainer(String hora) {
     return InkWell(
       onTap: () {
-        
         setState(() {
           selectedHour = hora;
         });
@@ -130,7 +136,10 @@ class _HoraScreenState extends State<HoraScreen> {
             const SizedBox(height: 15),
             const Padding(
               padding: EdgeInsets.only(left: 10.0),
-              child: Icon(Icons.access_time),
+              child: Icon(
+                Icons.access_time,
+                color: Color(0xFFD9D9D9),
+              ),
             ),
             const SizedBox(width: 10),
             Text(
@@ -147,7 +156,6 @@ class _HoraScreenState extends State<HoraScreen> {
               value: hora,
               groupValue: selectedHour,
               onChanged: (value) {
-                // Actualizar la hora seleccionada
                 setState(() {
                   selectedHour = value as String;
                 });
@@ -157,5 +165,30 @@ class _HoraScreenState extends State<HoraScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _saveDateAndHourToStrapi(
+      DateTime selectedDay, String selectedHour) async {
+    var headers = {'Content-Type': 'application/json'};
+    var request = http.Request(
+        'POST', Uri.parse('http://localhost:1337/api/agenda-medicas'));
+    request.body = json.encode({
+      "data": {
+        "id_agenda": "1",
+        "hora": selectedHour,
+        "fecha": selectedDay.toString(),
+        "id_profecional": 3,
+        "id_alfanumerica": 1
+      }
+    });
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      print(await response.stream.bytesToString());
+    } else {
+      print(response.reasonPhrase);
+    }
   }
 }

@@ -11,7 +11,7 @@ class AlertaNumero {
           },
           child: AlertDialog(
             title: const Text(
-              'Te hemos enviado\n      un mensaje',
+              ' Te hemos enviado\n      un mensaje',
               style: TextStyle(
                   color: Color(0xFFAD4409),
                   fontFamily: 'Montserrat',
